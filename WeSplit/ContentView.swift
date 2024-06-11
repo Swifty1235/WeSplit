@@ -6,21 +6,82 @@
 //
 
 import SwiftUI
-
 struct ContentView: View {
-    let students = ["Harry" , "Hermione" , "Ron"]
-    @State private var selectedStudent = "Harry"
+    
+    @State private var checkAmmount = 0.0
+    @State private var numberPeople = 2
+    @State private var tipPercentage = 20
+    @FocusState private var ammountisFocused: Bool
+    
+    
+    let tipPercentages = [10, 15, 20, 25, 0]
+    
+    
+    var perPerson: Double{
+        let peopleCount = Double(numberPeople) + 2
+        let tipSelection = Double(tipPercentage)
+        
+        let tipValue = checkAmmount / 100 * tipSelection
+        let grandTotal = checkAmmount + tipValue
+        let ammountPerson = grandTotal / peopleCount
+        return ammountPerson
+    }
+    
+    var totalplusTip : Double{
+        let tipSelection = Double(tipPercentage)
+        let tipValue = checkAmmount / 100 * tipSelection
+        return checkAmmount + tipValue
+    }
     
     var body: some View {
         NavigationStack{
             Form{
-                Picker("Select a Student" , selection: $selectedStudent) {
-                    ForEach (students, id: \.self){
-                        Text($0)
+                Section ("Ammount"){
+                    TextField("Amount", value: $checkAmmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                        .keyboardType(.decimalPad)
+                        .focused($ammountisFocused)
+                    
+                    Picker("Number of People" , selection: $numberPeople){
+                        ForEach (2..<100){
+                            Text("\($0) People")
+                        }
+                    }
+                    .pickerStyle(.navigationLink)
+                }
+                
+                
+                Section("Add Tip?"){
+                    Picker("Tip Percentage" , selection: $tipPercentage){
+                        ForEach(tipPercentages, id: \.self){
+                            Text($0, format: .percent)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                
+                    //addition of custom tip
+                        TextField("Custom Tip", value: $tipPercentage , format: .percent)
+                    
+                            .keyboardType(.decimalPad)
+                            .pickerStyle(.navigationLink)
+                }
+                
+                Section("Ammount per Person"){
+                    Text(perPerson,format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                }
+                
+                Section("Total"){
+                    Text(totalplusTip,format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                }
+                
+                .navigationTitle("WeSplit")
+                .toolbar{
+                    if ammountisFocused{
+                        Button("Done") {
+                            ammountisFocused = false
+                        }
                     }
                 }
             }
-            .navigationTitle("Student Selector")
         }
     }
 }
@@ -75,5 +136,24 @@ struct ContentView: View {
      }
  }
 }
+ 
+ 
+ struct ContentView: View {
+     let students = ["Harry" , "Hermione" , "Ron"]
+     @State private var selectedStudent = "Harry"
+     
+     var body: some View {
+         NavigationStack{
+             Form{
+                 Picker("Select a Student" , selection: $selectedStudent) {
+                     ForEach (students, id: \.self){
+                         Text($0)
+                     }
+                 }
+             }
+             .navigationTitle("Student Selector")
+         }
+     }
+ }
  
  */
